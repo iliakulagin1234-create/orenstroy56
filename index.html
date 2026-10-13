@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>ОренСтрой 56 — строим здания и дороги</title>
+<script>if(!matchMedia("(prefers-reduced-motion: reduce)").matches){document.documentElement.className="anim";setTimeout(function(){document.documentElement.classList.remove("anim")},3200);}</script>
+<meta name="description" content="ООО «ОренСтрой 56»: строительство и капремонт зданий, аренда спецтехники с оператором, строительство и ремонт дорог в Оренбурге и области. С 2020 года, член СРО.">
+<meta name="theme-color" content="#04070d">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@500&display=block" rel="stylesheet">
+<style>
+/* ОренСтрой 56 — сайт на одной странице в языке макета «Stratum hero».
+   Сохранены: сетка 1280x800 (--u/--t), рамка со срезами, вход DRAW → MASK →
+   DECODE → SETTLE, декод подписей, параллакс фона, рейка глав, меню-панель,
+   брейкпоинты. Фон — фотографии глав, они сменяются по мере прокрутки. */
+
+:root{
+  --u: clamp(0.68px, min(100vw / 1280, 100vh / 800), 1.72px);
+  --t: var(--u);
+  --u: clamp(0.68px, min(100vw / 1280, 100dvh / 800), 1.72px);
+  --line: rgba(255,255,255,.13);
+  --line-2: rgba(255,255,255,.22);
+  --amber:#e9a94b;
+  --text:#e9eef7;
+  --dim:rgba(224,232,245,.72);
+  --mute:rgba(224,232,245,.55);
+  --err:#ff8a7a;
+  --hair: max(1px, calc(1 * var(--u)));
+  --nudge: calc(.5 * var(--t));
+  --e-mask: cubic-bezier(.16,1,.3,1);
+  --e-line: cubic-bezier(.65,0,.35,1);
+  --e-soft: cubic-bezier(.22,.61,.36,1);
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+  --sans:'IBM Plex Sans',-apple-system,'Helvetica Neue',Arial,sans-serif;
+  --display:'Oswald','IBM Plex Sans',sans-serif;
+  --gl: rgba(10,14,22,.55);
+  --chamfer: polygon(calc(3*var(--t)) 0, calc(100% - 14*var(--t)) 0, 100% calc(14*var(--t)),
+                     100% calc(100% - 3*var(--t)), calc(100% - 3*var(--t)) 100%,
+                     calc(14*var(--t)) 100%, 0 calc(100% - 14*var(--t)), 0 calc(3*var(--t)));
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:#04070d}
+body{
+  margin:0;background:#04070d;color:var(--text);overflow-x:clip;
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  text-rendering:geometricPrecision;
+}
+a{color:inherit}
+
+/* ---------- фон: фото глав ---------- */
+.stage{position:fixed;inset:0;overflow:hidden;z-index:0}
+.bg{position:absolute;inset:0;background:#04070d;will-change:transform;transform-origin:50% 50%;backface-visibility:hidden}
+.bg .shot{position:absolute;inset:0;background-size:cover;background-position:50% 50%;
+  opacity:0;transition:opacity 1.1s ease;transform:scale(1.03)}
+.bg .shot.on{opacity:1;animation:drift 24s ease-in-out infinite alternate}
+@keyframes drift{from{transform:scale(1.03) translate(0,0)}to{transform:scale(1.1) translate(-1.2%,-.8%)}}
+.bg::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(to top, rgba(4,7,13,.94) 0%, rgba(4,7,13,.72) 28%, rgba(4,7,13,.3) 58%, rgba(4,7,13,.2) 80%, rgba(4,7,13,.45) 100%),
+             radial-gradient(120% 90% at 50% 40%, rgba(4,7,13,0) 55%, rgba(4,7,13,.55) 100%)}
+/* за главами фон уходит в тень, чтобы текст читался */
+.deep{position:absolute;inset:0;background:rgba(4,7,13,.66);opacity:0;transition:opacity .8s ease;pointer-events:none}
+.past .deep{opacity:1}
+
+/* ---------- неподвижная рамка и шапка ---------- */
+.chrome{position:fixed;inset:0;pointer-events:none;z-index:4}
+.chrome a,.chrome button,.chrome ul{pointer-events:auto}
+.frame{position:absolute;left:calc(30*var(--u));top:calc(30*var(--u));
+       right:calc(30*var(--u));bottom:calc(31*var(--u))}
+.ln{position:absolute;background:var(--line)}
+.ln-t{left:calc(26*var(--u));right:calc(26*var(--u));top:0;height:var(--hair)}
+.ln-b{left:calc(26*var(--u));right:calc(26*var(--u));bottom:0;height:var(--hair)}
+.ln-l{top:calc(26*var(--u));bottom:calc(26*var(--u));left:0;width:var(--hair)}
+.ln-r{top:calc(26*var(--u));bottom:calc(26*var(--u));right:0;width:var(--hair)}
+.cn{position:absolute;width:calc(26*var(--u));height:calc(26*var(--u))}
+.cn-tl{left:0;top:0;background:linear-gradient(to bottom right,transparent calc(50% - .65px),var(--line) calc(50% - .65px),var(--line) calc(50% + .65px),transparent calc(50% + .65px))}
+.cn-br{right:0;bottom:0;background:linear-gradient(to bottom right,transparent calc(50% - .65px),var(--line) calc(50% - .65px),var(--line) calc(50% + .65px),transparent calc(50% + .65px))}
+.cn-tr{right:0;top:0;background:linear-gradient(to bottom left,transparent calc(50% - .65px),var(--line) calc(50% - .65px),var(--line) calc(50% + .65px),transparent calc(50% + .65px))}
+.cn-bl{left:0;bottom:0;background:linear-gradient(to bottom left,transparent calc(50% - .65px),var(--line) calc(50% - .65px),var(--line) calc(50% + .65px),transparent calc(50% + .65px))}
+.topfade{position:fixed;left:0;right:0;top:0;height:calc(110*var(--t));z-index:3;pointer-events:none;
+  background:linear-gradient(to bottom, rgba(4,7,13,.92), rgba(4,7,13,.6) 60%, rgba(4,7,13,0));
+  opacity:0;transition:opacity .5s ease}
+.past .topfade{opacity:1}
+
+.lbl{font-family:var(--mono);font-weight:500;font-size:calc(10*var(--t));line-height:1;
+     white-space:nowrap;text-transform:uppercase}
+.t{position:relative;top:var(--nudge);display:inline-block;text-align:left;white-space:pre}
+
+.logo{position:absolute;left:calc(24*var(--t));top:calc(19*var(--t));display:block;
+      color:#fff;text-decoration:none;height:calc(26*var(--t))}
+.logo .wm{display:block;font-family:var(--display);font-weight:500;
+      font-size:calc(21*var(--t));line-height:calc(26*var(--t));letter-spacing:calc(2.2*var(--t));white-space:nowrap}
+.logo .wm b{color:var(--amber);font-weight:500}
+
+.masthead{position:absolute;right:calc(11*var(--t));top:calc(12*var(--t));
+          height:calc(41*var(--t));display:flex;align-items:center;z-index:5}
+.navset{display:contents}
+.links{display:flex;align-items:center;gap:calc(16*var(--t));margin-right:calc(18*var(--t))}
+.links a{color:#e3e8f2;text-decoration:none;letter-spacing:calc(.6*var(--t));
+         opacity:.94;transition:opacity .25s ease,color .25s ease}
+.links a:hover,.links a.cur{opacity:1;color:#fff}
+.links a.cur .t::after{content:"";position:absolute;left:0;right:0;bottom:calc(-7*var(--t));height:var(--hair);background:var(--amber)}
+
+.pill{height:calc(41*var(--t));display:flex;align-items:center;text-decoration:none;
+      position:relative;cursor:pointer;border:0;padding:0;color:#fff}
+.pill .ico{flex:none;display:block}
+.enter{padding:0 calc(19*var(--t)) 0 calc(21*var(--t));
+       background:rgba(255,250,246,.05);
+       -webkit-backdrop-filter:blur(calc(12*var(--t)));backdrop-filter:blur(calc(12*var(--t)));
+       transition:background .3s ease}
+.enter:hover{background:rgba(255,250,246,.09)}
+.enter .ico{width:calc(7*var(--t));height:calc(11*var(--t));fill:var(--amber)}
+.enter span{margin-left:calc(7*var(--t));letter-spacing:calc(.6*var(--t))}
+
+.menu{padding:0 calc(22*var(--t)) 0 calc(20*var(--t));margin-left:calc(2*var(--t));
+      background:rgba(255,250,246,.1);
+      -webkit-backdrop-filter:blur(calc(12*var(--t)));backdrop-filter:blur(calc(12*var(--t)));
+      clip-path:polygon(0 0, calc(100% - 15*var(--t)) 0, 100% calc(15*var(--t)), 100% 100%, 0 100%);
+      transition:background .3s ease}
+.menu:hover{background:rgba(255,250,246,.16)}
+.menu .ico{width:calc(10*var(--t));height:calc(10*var(--t));fill:var(--amber)}
+.menu span{margin-left:calc(8*var(--t));letter-spacing:calc(.6*var(--t))}
+@media (min-width:1001px){ .menu{display:none} }
+
+.index{position:absolute;left:calc(10.5*var(--t));top:50%;transform:translateY(calc(-50% + 1.5*var(--t)));
+       list-style:none;margin:0;padding:0;transition:opacity .4s ease}
+.index li{height:calc(26.6*var(--t));display:flex;align-items:center;position:relative}
+.index a{font-family:var(--mono);font-weight:500;font-size:calc(10*var(--t));
+         line-height:1;letter-spacing:calc(1.3*var(--t));text-decoration:none;white-space:nowrap;
+         color:rgba(232,238,250,.55);transition:color .3s ease}
+.index a:hover{color:#e6eaf5}
+.index .on a{color:#fff}
+.index .on::before{content:"";position:absolute;left:calc(-13.5*var(--t));top:50%;
+                   width:calc(6*var(--t));height:calc(7*var(--t));
+                   transform:translateY(-50%);background:var(--amber)}
+
+/* ---------- первый экран ---------- */
+main{position:relative;z-index:2}
+.cover{position:relative;height:100vh;height:100svh;min-height:calc(520*var(--t))}
+.cover-in{position:absolute;left:calc(30*var(--u));right:calc(30*var(--u));top:calc(30*var(--u));bottom:calc(31*var(--u))}
+.hero{position:absolute;left:0;right:0;bottom:max(7.98%, calc(59*var(--t)));
+      display:flex;flex-direction:column;align-items:center;text-align:center;padding-inline:calc(150*var(--t))}
+.headline{margin:0;font-family:var(--display);font-weight:500;font-size:calc(46*var(--t));line-height:calc(50*var(--t));
+          letter-spacing:calc(1.6*var(--t));padding-left:calc(1.6*var(--t));
+          color:#fff;text-transform:uppercase;text-shadow:0 2px 28px rgba(4,7,13,.55)}
+.headline .hrow{display:block;overflow:hidden}
+.headline .hrise{display:block}
+.blurb{text-shadow:0 1px 14px rgba(4,7,13,.7);margin:calc(15.56*var(--t)) 0 0;font-weight:400;
+       font-size:calc(12*var(--t));line-height:calc(20*var(--t));color:var(--dim);max-width:calc(470*var(--t))}
+
+.cta{margin-top:calc(23*var(--t));position:relative;height:calc(41*var(--t));padding:0 calc(19*var(--t));
+     display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border:0;background:none;cursor:pointer;color:var(--text)}
+.cta-glass{position:absolute;inset:0;background:rgba(255,255,255,.045);
+  -webkit-backdrop-filter:blur(calc(12*var(--t)));backdrop-filter:blur(calc(12*var(--t)));
+  clip-path:polygon(calc(3*var(--t)) 0, calc(100% - 10*var(--t)) 0, 100% calc(10*var(--t)),
+                    100% calc(100% - 3*var(--t)), calc(100% - 3*var(--t)) 100%,
+                    calc(10*var(--t)) 100%, 0 calc(100% - 10*var(--t)), 0 calc(3*var(--t)));
+  transition:background .3s ease}
+.cta:hover .cta-glass{background:rgba(255,255,255,.09)}
+.cta.solid .cta-glass{background:rgba(233,169,75,.16)}
+.cta.solid:hover .cta-glass{background:rgba(233,169,75,.26)}
+.cta-edge{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.cta-edge path{fill:none;stroke:rgba(255,255,255,.14);stroke-width:1;transition:stroke .3s ease}
+.cta:hover .cta-edge path{stroke:rgba(255,255,255,.3)}
+.cta.solid .cta-edge path{stroke:rgba(233,169,75,.5)}
+.cta-in{position:relative;display:flex;align-items:center}
+.cta .ico{width:calc(7*var(--t));height:calc(11*var(--t));fill:var(--amber);flex:none}
+.cta .t{margin-left:calc(7*var(--t));letter-spacing:calc(.7*var(--t))}
+.cta[aria-busy="true"]{opacity:.6;cursor:progress}
+
+.dock{position:absolute;left:0;right:0;bottom:0;height:calc(47*var(--t));--nudge:calc(1*var(--t))}
+.dock .rule{position:absolute;left:0;right:0;top:0;height:var(--hair);background:var(--line)}
+.dock .div{position:absolute;top:0;bottom:0;width:var(--hair);background:rgba(255,255,255,.21)}
+.dock .div-l{left:calc(176*var(--t))}
+.dock .div-r{right:calc(152*var(--t))}
+.dock a{display:flex;align-items:center;text-decoration:none;color:rgba(255,255,255,.85);transition:color .3s ease}
+.dock a:hover{color:#fff}
+.d-call{position:absolute;left:calc(26*var(--t));top:0;bottom:0}
+.d-call .ico{width:calc(13*var(--t));height:calc(13*var(--t));flex:none;fill:none;stroke:currentColor;stroke-width:1.5}
+.d-call span{margin-left:calc(10*var(--t));letter-spacing:calc(.4*var(--t))}
+.d-down{position:absolute;left:50%;transform:translateX(-50%);top:0;bottom:0}
+.d-down .ico{width:calc(5*var(--t));height:calc(7*var(--t));flex:none;fill:currentColor;position:relative;top:calc(-1*var(--t))}
+.d-down span{margin-left:calc(10*var(--t));letter-spacing:calc(.4*var(--t))}
+.d-mail{position:absolute;right:calc(24*var(--t));top:0;bottom:0}
+.d-mail span{letter-spacing:calc(.4*var(--t))}
+.d-mail .ico{width:calc(16*var(--t));height:calc(15*var(--t));margin-left:calc(11*var(--t));
+           flex:none;fill:none;stroke:currentColor;stroke-width:1.6}
+
+/* ---------- главы ---------- */
+.chap{position:relative;padding:calc(150*var(--t)) calc(84*var(--t)) calc(120*var(--t)) calc(240*var(--t))}
+.chap-in{max-width:calc(1000*var(--t))}
+.kicker{display:flex;align-items:center;gap:calc(12*var(--t));color:var(--amber);margin-bottom:calc(22*var(--t))}
+.kicker::after{content:"";height:var(--hair);width:calc(60*var(--t));background:rgba(233,169,75,.5)}
+.h2{margin:0;font-family:var(--display);font-weight:500;text-transform:uppercase;color:#fff;
+    font-size:calc(52*var(--t));line-height:calc(56*var(--t));letter-spacing:calc(1.6*var(--t))}
+.h2 .hrow{display:block;overflow:hidden}
+.h2 .hrise{display:block}
+.lead{margin:calc(20*var(--t)) 0 0;font-size:calc(14*var(--t));line-height:calc(23*var(--t));color:var(--dim);max-width:calc(560*var(--t))}
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:calc(56*var(--t));margin-top:calc(56*var(--t));align-items:start}
+.grid.one{grid-template-columns:minmax(0,1fr)}
+
+/* список услуг — строки с волосяными линиями */
+.rows{list-style:none;margin:0;padding:0;border-top:var(--hair) solid var(--line-2)}
+.rows li{display:grid;grid-template-columns:calc(34*var(--t)) minmax(0,1fr);gap:calc(14*var(--t));
+         padding:calc(18*var(--t)) 0;border-bottom:var(--hair) solid var(--line)}
+.rows .n{font-family:var(--mono);font-size:calc(10*var(--t));color:var(--amber);padding-top:calc(4*var(--t))}
+.rows h3{margin:0;font-family:var(--sans);font-weight:500;font-size:calc(16*var(--t));line-height:1.3;color:#fff}
+.rows p{margin:calc(6*var(--t)) 0 0;font-size:calc(13*var(--t));line-height:1.6;color:var(--dim)}
+.rows .tasks{margin-top:calc(8*var(--t));color:var(--mute);font-family:var(--mono);font-size:calc(10*var(--t));letter-spacing:calc(.4*var(--t));line-height:1.7;text-transform:uppercase}
+
+/* цифры */
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:var(--hair) solid var(--line-2);margin-top:calc(48*var(--t))}
+.stats div{padding:calc(22*var(--t)) calc(20*var(--t)) calc(22*var(--t)) 0;border-bottom:var(--hair) solid var(--line)}
+.stats b{display:block;font-family:var(--display);font-weight:500;font-size:calc(44*var(--t));line-height:1;color:#fff;font-variant-numeric:tabular-nums}
+.stats span{display:block;margin-top:calc(10*var(--t));font-size:calc(12.5*var(--t));line-height:1.5;color:var(--dim)}
+
+.terms{display:flex;flex-wrap:wrap;gap:calc(10*var(--t)) calc(28*var(--t));margin-top:calc(22*var(--t));color:var(--mute)}
+.terms b{color:#fff;font-weight:500}
+
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:calc(18*var(--t));counter-reset:s}
+.steps li{border-top:var(--hair) solid var(--line-2);padding-top:calc(14*var(--t));counter-increment:s}
+.steps li::before{content:counter(s,decimal-leading-zero);display:block;font-family:var(--mono);font-size:calc(10*var(--t));color:var(--amber);margin-bottom:calc(12*var(--t))}
+.steps h3{margin:0;font-weight:500;font-size:calc(14.5*var(--t));color:#fff}
+.steps p{margin:calc(6*var(--t)) 0 0;font-size:calc(12.5*var(--t));line-height:1.55;color:var(--dim)}
+.sub{margin:calc(64*var(--t)) 0 calc(20*var(--t));color:var(--mute)}
+
+.faq{border-top:var(--hair) solid var(--line-2)}
+.faq details{border-bottom:var(--hair) solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:calc(20*var(--t));align-items:center;
+  padding:calc(16*var(--t)) 0;font-weight:500;font-size:calc(14.5*var(--t));color:#fff;min-height:44px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"";width:calc(8*var(--t));height:calc(8*var(--t));flex:none;border-right:1.5px solid var(--amber);border-bottom:1.5px solid var(--amber);
+  transform:rotate(45deg) translate(-2px,-2px);transition:transform .3s var(--e-soft)}
+.faq details[open] summary::after{transform:rotate(225deg) translate(-2px,-2px)}
+.faq .ans{margin:0;padding:0 0 calc(16*var(--t));font-size:calc(13*var(--t));line-height:1.6;color:var(--dim);max-width:62ch}
+
+.contacts{list-style:none;margin:0;padding:0;border-top:var(--hair) solid var(--line-2)}
+.contacts li{padding:calc(16*var(--t)) 0;border-bottom:var(--hair) solid var(--line)}
+.contacts .lbl{color:var(--mute);display:block;margin-bottom:calc(8*var(--t))}
+.contacts a,.contacts .v{font-family:var(--display);font-weight:500;font-size:calc(24*var(--t));letter-spacing:calc(.6*var(--t));color:#fff;text-decoration:none;overflow-wrap:anywhere}
+.contacts .v.small{font-family:var(--sans);font-weight:400;font-size:calc(14*var(--t));color:var(--dim);letter-spacing:0}
+.contacts a:hover{color:var(--amber)}
+
+.colophon{margin-top:calc(90*var(--t));padding-top:calc(18*var(--t));border-top:var(--hair) solid var(--line);
+  display:flex;flex-wrap:wrap;gap:calc(8*var(--t)) calc(24*var(--t));color:var(--mute)}
+
+/* ---------- формы: стеклянная панель со срезанными углами ---------- */
+.panel{position:relative;padding:calc(30*var(--t)) calc(28*var(--t)) calc(28*var(--t))}
+.panel::before{content:"";position:absolute;inset:0;background:var(--gl);
+  -webkit-backdrop-filter:blur(calc(16*var(--t)));backdrop-filter:blur(calc(16*var(--t)));clip-path:var(--chamfer)}
+.panel > *{position:relative}
+.panel-edge{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.panel-edge path{fill:none;stroke:var(--line-2);stroke-width:1}
+.form{display:grid;gap:calc(14*var(--t))}
+.form h3{margin:0;font-family:var(--display);font-weight:500;text-transform:uppercase;font-size:calc(22*var(--t));letter-spacing:calc(1*var(--t));color:#fff}
+.form .hint{margin:calc(-4*var(--t)) 0 calc(4*var(--t));font-size:calc(12.5*var(--t));line-height:1.55;color:var(--dim)}
+.row2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:calc(14*var(--t))}
+.field{display:grid;gap:calc(7*var(--t))}
+.field > span{font-family:var(--mono);font-size:calc(10*var(--t));letter-spacing:calc(.6*var(--t));text-transform:uppercase;color:var(--mute)}
+.field input,.field select,.field textarea{font:inherit;font-family:var(--sans);font-size:max(16px, calc(13.5*var(--t)));color:#fff;
+  background:rgba(255,255,255,.045);border:var(--hair) solid var(--line-2);border-radius:0;
+  padding:0 calc(14*var(--t));height:calc(44*var(--t));min-height:44px;width:100%;appearance:none;
+  transition:border-color .25s ease, background .25s ease}
+.field textarea{height:auto;min-height:calc(90*var(--t));padding-top:calc(11*var(--t));resize:vertical}
+.field select{background-image:linear-gradient(45deg,transparent 50%,var(--amber) 50%),linear-gradient(135deg,var(--amber) 50%,transparent 50%);
+  background-position:calc(100% - 18px) 52%,calc(100% - 13px) 52%;background-size:5px 5px;background-repeat:no-repeat;padding-right:40px}
+.field select option{background:#0b111b;color:#fff}
+.field input::placeholder,.field textarea::placeholder{color:rgba(224,232,245,.35)}
+.field input:hover,.field select:hover,.field textarea:hover{border-color:rgba(255,255,255,.4)}
+.field input:focus-visible,.field select:focus-visible,.field textarea:focus-visible{outline:none;border-color:var(--amber);background:rgba(255,255,255,.07)}
+.field input[type="date"]{color-scheme:dark}
+.field .err{font-size:calc(11.5*var(--t));color:var(--err);min-height:0}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--err)}
+.check{display:flex;gap:calc(10*var(--t));align-items:flex-start;font-size:calc(12*var(--t));line-height:1.5;color:var(--dim);cursor:pointer}
+.check input{width:18px;height:18px;flex:none;margin:1px 0 0;accent-color:var(--amber)}
+.check.invalid{color:var(--err)}
+.form .cta{justify-self:start;margin-top:calc(4*var(--t))}
+.form-err{margin:0;font-size:calc(12*var(--t));color:var(--err)}
+.form-done{display:none;gap:calc(12*var(--t))}
+.form.done > *:not(.form-done){display:none}
+.form.done .form-done{display:grid}
+.form-done .mark{width:calc(44*var(--t));height:calc(44*var(--t));border:var(--hair) solid var(--amber);display:grid;place-items:center}
+.form-done .mark svg{width:55%;height:55%;fill:none;stroke:var(--amber);stroke-width:2;stroke-dasharray:30;stroke-dashoffset:30}
+.form.done .form-done .mark svg{animation:draw .5s var(--e-mask) .1s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.form-done p{margin:0;font-size:calc(13*var(--t));line-height:1.6;color:var(--dim)}
+.form-done a{color:#fff}
+.form-done .cta{justify-self:start}
+
+/* ---------- появление глав при прокрутке ---------- */
+.js .chap .hrise{transform:translateY(112%);transition:transform .9s var(--e-mask)}
+.js .chap .h2 .hrow+.hrow .hrise{transition-delay:.1s}
+.js .chap .rise{opacity:0;transform:translateY(calc(7*var(--t)));transition:opacity .72s var(--e-soft) .25s, transform .72s var(--e-soft) .25s}
+.js .chap .rise.r2{transition-delay:.4s}
+.js .chap .draw{transform:scaleX(0);transform-origin:left center;transition:transform .6s var(--e-line) .15s}
+.js .chap.in .hrise{transform:none}
+.js .chap.in .rise{opacity:1;transform:none}
+.js .chap.in .draw{transform:none}
+
+/* ================= ВХОД — тот же сценарий, что в макете ================= */
+@keyframes drawX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes drawY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes maskUp{from{transform:translateY(112%)}to{transform:translateY(0)}}
+@keyframes settle{from{opacity:0;transform:translateY(calc(7*var(--t)))}to{opacity:1;transform:none}}
+@keyframes markIn{from{transform:translateY(-50%) scaleX(0)}to{transform:translateY(-50%) scaleX(1)}}
+@keyframes settleC{from{opacity:0;transform:translate(-50%,calc(7*var(--t)))}to{opacity:1;transform:translateX(-50%)}}
+
+.anim .ln-t{transform-origin:left center;animation:drawX .5s var(--e-line) .04s both}
+.anim .ln-l{transform-origin:center top;animation:drawY .5s var(--e-line) .04s both}
+.anim .ln-b{transform-origin:right center;animation:drawX .5s var(--e-line) .2s both}
+.anim .ln-r{transform-origin:center bottom;animation:drawY .5s var(--e-line) .2s both}
+.anim .cn{animation:fadeIn .3s linear .55s both}
+.anim .logo{overflow:hidden}
+.anim .logo .wm{animation:maskUp .8s var(--e-mask) .16s both}
+.anim .enter{animation:settle .56s var(--e-soft) .3s both}
+.anim .menu{animation:settle .56s var(--e-soft) .36s both}
+.anim .links{animation:fadeIn .4s linear .34s both}
+.anim .hero .headline .hrise{animation:maskUp .9s var(--e-mask) both}
+.anim .hero .headline .hrow:first-child .hrise{animation-delay:.42s}
+.anim .hero .headline .hrow+.hrow .hrise{animation-delay:.52s}
+.anim .index{animation:fadeIn .45s linear .6s both}
+.anim .index .on::before{animation:markIn .42s var(--e-soft) .64s both}
+.anim .hero .blurb{animation:settle .72s var(--e-soft) .7s both}
+.anim .hero .cta{animation:settle .62s var(--e-soft) .86s both}
+.anim .dock .rule{transform-origin:left center;animation:drawX .52s var(--e-line) .92s both}
+.anim .dock .div{transform-origin:center top;animation:drawY .36s var(--e-line) 1.06s both}
+.anim .d-call{animation:settle .52s var(--e-soft) .96s both}
+.anim .d-down{animation:settleC .52s var(--e-soft) 1.02s both}
+.anim .d-mail{animation:settle .52s var(--e-soft) 1.08s both}
+
+a:focus-visible,button:focus-visible,summary:focus-visible{outline:calc(1.5*var(--t)) solid var(--amber);outline-offset:calc(3*var(--t))}
+.check input:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.skip{position:absolute;left:16px;top:-60px;z-index:20;background:var(--amber);color:#04070d;padding:10px 16px;font-family:var(--mono);font-size:12px;text-decoration:none}
+.skip:focus{top:16px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}html{scroll-behavior:auto}}
+
+/* ---------- планшет ---------- */
+@media (max-width: 1152px){
+  :root{
+    --u: clamp(.8px, min(100vw / 1280, 100vh / 800), 1.1px);
+    --u: clamp(.8px, min(100vw / 1280, 100dvh / 800), 1.1px);
+    --t: max(var(--u), clamp(.9px, calc(.9px + (1152px - 100vw) * .00042), 1.12px));
+  }
+  .dock{display:flex;justify-content:space-between;align-items:stretch}
+  .dock .div{display:none}
+  .d-call,.d-mail{position:static;height:auto}
+  .d-call{padding:0 min(calc(20*var(--t)),5vw) 0 min(calc(26*var(--t)),6vw);border-right:var(--hair) solid rgba(255,255,255,.21)}
+  .d-mail{padding:0 min(calc(24*var(--t)),6vw) 0 min(calc(20*var(--t)),5vw);border-left:var(--hair) solid rgba(255,255,255,.21)}
+  .links{gap:calc(17*var(--t));align-self:stretch}
+  .links a{display:flex;align-items:center;align-self:stretch}
+  .index a{padding:calc(7*var(--t)) 0}
+  .chap{padding-left:calc(200*var(--t));padding-right:calc(56*var(--t))}
+  .steps{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:calc(26*var(--t))}
+}
+@media (max-width: 1152px) and (max-aspect-ratio: 6/5){
+  .index{top:32%}
+  .hero{padding-inline:calc(22*var(--t))}
+}
+
+/* ---------- навигация в панель ---------- */
+@media (max-width: 1000px){
+  .navset{
+    display:flex;flex-direction:column;align-items:stretch;
+    position:absolute;top:calc(52*var(--t));right:0;min-width:calc(220*var(--t));
+    padding:calc(16*var(--t)) calc(20*var(--t)) calc(18*var(--t));gap:calc(4*var(--t));
+    background:rgba(11,16,26,.86);
+    -webkit-backdrop-filter:blur(calc(16*var(--t)));backdrop-filter:blur(calc(16*var(--t)));
+    clip-path:polygon(0 0, calc(100% - 15*var(--t)) 0, 100% calc(15*var(--t)), 100% 100%,
+                      calc(15*var(--t)) 100%, 0 calc(100% - 15*var(--t)));
+    opacity:0;visibility:hidden;transform:translateY(calc(-6*var(--t)));
+    transition:opacity .34s ease, transform .34s var(--e-soft), visibility .34s;z-index:6;
+  }
+  .nav-open .navset{opacity:1;visibility:visible;transform:none}
+  .links{flex-direction:column;align-items:stretch;gap:0;margin-right:0;align-self:auto}
+  .links a{padding:calc(11*var(--t)) 0;justify-content:flex-start}
+  .links a.cur .t::after{display:none}
+  .navset .enter{align-self:stretch;justify-content:flex-start;margin-top:calc(10*var(--t));height:calc(42*var(--t));
+    padding:0 calc(16*var(--t));background:rgba(255,250,246,.08)}
+  /* рейка уступает место тексту, как только начинаются главы */
+  .past .index{opacity:0;pointer-events:none}
+  .chap{padding-left:calc(56*var(--t))}
+  .grid{grid-template-columns:minmax(0,1fr);gap:calc(40*var(--t))}
+}
+
+/* ---------- телефон ---------- */
+@media (max-width: 548px){
+  :root{
+    --u: clamp(.62px, min(100vw / 500, 100vh / 820), 1.1px);
+    --u: clamp(.62px, min(100vw / 500, 100dvh / 820), 1.1px);
+    --t: clamp(1.06px, calc(100vw / 489), 1.12px);
+  }
+  .frame,.cover-in{left:calc(22*var(--u));right:calc(22*var(--u));top:calc(22*var(--u));bottom:calc(22*var(--u))}
+  .logo{left:calc(16*var(--t))}
+  .logo .wm{font-size:min(calc(19*var(--t)), 5vw);letter-spacing:calc(1.4*var(--t))}
+  .masthead{right:calc(9*var(--t))}
+  .index{top:calc(70*var(--t));transform:none}
+  .index li{height:calc(24*var(--t))}
+  .hero{padding-inline:calc(18*var(--t));bottom:calc(100*var(--t))}
+  .headline{text-wrap:balance;font-size:calc(34*var(--t));line-height:calc(38*var(--t))}
+  .blurb br{display:none}
+  .headline .hrow{display:inline;overflow:visible}
+  .headline .hrise{display:inline}
+  .anim .hero .headline .hrise{animation:none}
+  .anim .hero .headline{animation:settle .8s var(--e-mask) .42s both}
+  .dock{height:auto;flex-wrap:wrap}
+  .d-call,.d-mail{flex:1 1 0;justify-content:center;height:calc(44*var(--t))}
+  .d-down{position:static;transform:none;order:1;flex:1 0 100%;justify-content:center;height:calc(40*var(--t));
+          border-top:var(--hair) solid rgba(255,255,255,.13)}
+  .anim .d-down{animation-name:settle}
+  .chap{padding:calc(110*var(--t)) calc(30*var(--t)) calc(80*var(--t))}
+  .h2{font-size:calc(36*var(--t));line-height:calc(40*var(--t))}
+  .h2 .hrow{display:inline;overflow:visible}
+  .h2 .hrise{display:inline}
+  .js .chap .h2 .hrise{transform:none;transition:none}
+  .js .chap .h2{opacity:0;transform:translateY(calc(7*var(--t)));transition:opacity .7s var(--e-soft),transform .7s var(--e-soft)}
+  .js .chap.in .h2{opacity:1;transform:none}
+  .stats{grid-template-columns:minmax(0,1fr)}
+  .steps{grid-template-columns:minmax(0,1fr)}
+  .row2{grid-template-columns:minmax(0,1fr)}
+  .panel{padding:calc(24*var(--t)) calc(18*var(--t))}
+  .contacts a,.contacts .v{font-size:calc(21*var(--t))}
+}
+@media (max-height: 560px){ .hero .blurb{display:none} }
+</style>
+</head>
+<body>
+<a class="skip" href="#build">К содержанию</a>
+
+<div class="stage" aria-hidden="true">
+  <div class="bg">
+    <div class="shot on" data-shot="build" data-bg="assets/img/stroy.jpg"></div>
+    <div class="shot" data-shot="repair" data-bg="assets/img/remont.jpg"></div>
+    <div class="shot" data-shot="tech" data-bg="assets/img/tech.jpg"></div>
+    <div class="shot" data-shot="roads" data-bg="assets/img/roads.jpg"></div>
+    <div class="deep"></div>
+  </div>
+</div>
+<div class="topfade" aria-hidden="true"></div>
+
+<div class="chrome">
+  <div class="frame">
+    <span class="ln ln-t"></span><span class="ln ln-b"></span>
+    <span class="ln ln-l"></span><span class="ln ln-r"></span>
+    <span class="cn cn-tl"></span><span class="cn cn-tr"></span>
+    <span class="cn cn-bl"></span><span class="cn cn-br"></span>
+
+    <a class="logo" href="#top" aria-label="ОренСтрой 56 — в начало"><span class="wm">ОРЕНСТРОЙ <b>56</b></span></a>
+
+    <nav class="masthead" aria-label="Основная навигация">
+      <div class="navset" id="navset">
+        <div class="links lbl">
+          <a href="#build" data-for="build repair"><span class="t">Строительство</span></a><a href="#tech" data-for="tech"><span class="t">Техника</span></a><a href="#roads" data-for="roads"><span class="t">Дороги</span></a><a href="#about" data-for="gov about"><span class="t">О компании</span></a><a href="#contacts" data-for="contacts"><span class="t">Контакты</span></a>
+        </div>
+        <a class="pill enter lbl" href="#contacts">
+          <svg class="ico" viewBox="0 0 7 11" aria-hidden="true"><rect x="0" y="0" width="4" height="5"/><rect x="3" y="4" width="4" height="4"/><rect x="0" y="7" width="4" height="4"/></svg>
+          <span class="t">Заявка</span>
+        </a>
+      </div>
+      <button class="pill menu lbl" type="button" aria-expanded="false" aria-controls="navset">
+        <svg class="ico" viewBox="0 0 10 10" aria-hidden="true"><rect x="0" y="0" width="4" height="4" rx=".8"/><rect x="6" y="0" width="4" height="4" rx=".8"/><rect x="0" y="6" width="4" height="4" rx=".8"/><rect x="6" y="6" width="4" height="4" rx=".8"/></svg>
+        <span class="t">Меню</span>
+      </button>
+    </nav>
+
+    <ul class="index" aria-label="Главы">
+      <li class="on"><a href="#build" aria-current="true"><span class="t">Строительство</span></a></li>
+      <li><a href="#repair"><span class="t">Капремонт</span></a></li>
+      <li><a href="#tech"><span class="t">Спецтехника</span></a></li>
+      <li><a href="#roads"><span class="t">Дороги</span></a></li>
+      <li><a href="#gov"><span class="t">Госзаказ</span></a></li>
+      <li><a href="#about"><span class="t">О компании</span></a></li>
+      <li><a href="#contacts"><span class="t">Контакты</span></a></li>
+    </ul>
+  </div>
+</div>
+
+<main id="top">
+  <!-- ============ ПЕРВЫЙ ЭКРАН ============ -->
+  <section class="cover" data-chapter="build" data-shot="build" aria-label="ОренСтрой 56">
+    <div class="cover-in">
+      <div class="hero">
+        <h1 class="headline"><span class="hrow"><span class="hrise">Строим здания </span></span><span class="hrow"><span class="hrise">и дороги</span></span></h1>
+        <p class="blurb">С 2020 года «ОренСтрой 56» строит и ремонтирует здания,<br>
+          прокладывает дороги и сдаёт в аренду собственную спецтехнику<br>
+          в Оренбурге, области и соседних регионах.</p>
+        <a class="cta lbl" href="#contacts">
+          <span class="cta-glass"></span>
+          <svg class="cta-edge" viewBox="0 0 190 41" preserveAspectRatio="none" aria-hidden="true"><path d="M3.5.5 H179.5 L189.5 10.5 V37.5 L186.5 40.5 H10.5 L.5 30.5 V3.5 Z" vector-effect="non-scaling-stroke"/></svg>
+          <span class="cta-in"><svg class="ico" viewBox="0 0 7 11" aria-hidden="true"><rect x="0" y="0" width="4" height="5"/><rect x="3" y="4" width="4" height="4"/><rect x="0" y="7" width="4" height="4"/></svg><span class="t">Обсудить объект</span></span>
+        </a>
+      </div>
+
+      <div class="dock">
+        <span class="rule"></span><span class="div div-l"></span><span class="div div-r"></span>
+        <a class="d-call lbl" href="tel:+73532323535">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2"/></svg>
+          <span class="t">+7 (3532) 32-35-35</span>
+        </a>
+        <a class="d-down lbl" href="#build">
+          <svg class="ico" viewBox="0 0 5 7" aria-hidden="true"><path d="M0 0 H5 L2.5 3 Z"/><path d="M0 4 H5 L2.5 7 Z"/></svg>
+          <span class="t">Листайте вниз</span>
+        </a>
+        <a class="d-mail lbl" href="mailto:orenstroy5600@mail.ru">
+          <span class="t">Написать нам</span>
+          <svg class="ico" viewBox="0 0 16 15" aria-hidden="true"><path d="M8 .8 C12 .8 15.2 3.8 15.2 7.4 C15.2 11 12 14 8 14 C6.6 14 5.3 13.6 4.2 13 L.9 13.9 L1.9 10.9 C1.2 9.9 .8 8.7 .8 7.4 C.8 3.8 4 .8 8 .8 Z"/><g fill="currentColor" stroke="none"><circle cx="5.2" cy="7.4" r=".95"/><circle cx="8" cy="7.4" r=".95"/><circle cx="10.8" cy="7.4" r=".95"/></g></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 01 СТРОИТЕЛЬСТВО ============ -->
+  <section class="chap" id="build" data-chapter="build" data-shot="build" aria-labelledby="h-build">
+    <div class="chap-in">
+      <p class="kicker lbl rise"><span class="t">01 — Строительство</span></p>
+      <h2 class="h2" id="h-build"><span class="hrow"><span class="hrise">Строим то, что </span></span><span class="hrow"><span class="hrise">остаётся городу</span></span></h2>
+      <p class="lead rise r2">Жилые, социальные и административные здания — от котлована до сдачи с исполнительной документацией. Генподряд или отдельные этапы работ.</p>
+      <div class="grid">
+        <ol class="rows rise r2">
+          <li><span class="n">01</span><div><h3>Новое строительство</h3><p>Жилые, социальные, административные и производственные здания. От нулевого цикла до сдачи.</p></div></li>
+          <li><span class="n">02</span><div><h3>Реконструкция</h3><p>Перепланировка, усиление конструкций, надстройка и пристройка с сохранением несущего каркаса.</p></div></li>
+          <li><span class="n">03</span><div><h3>Наружные инженерные сети</h3><p>Водоснабжение, водоотведение и газоснабжение: земляные работы, прокладка и подключение.</p></div></li>
+          <li><span class="n">04</span><div><h3>Внутренние системы</h3><p>Отопление, вентиляция и кондиционирование, водопровод и канализация, электромонтаж.</p></div></li>
+          <li><span class="n">05</span><div><h3>Отделка</h3><p>Устройство полов, облицовка стен, чистовая отделка помещений.</p></div></li>
+        </ol>
+        <div class="panel rise r2">
+          <svg class="panel-edge" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M.5 .5 H86 L99.5 14 V99.5 H14 L.5 86 Z" vector-effect="non-scaling-stroke"/></svg>
+          <form class="form" data-form data-subject="Расчёт строительного объекта" novalidate>
+            <h3>Рассчитать объект</h3>
+            <p class="hint">Опишите задачу — инженер перезвонит, уточнит детали и согласует выезд.</p>
+            <label class="field"><span>Тип работ</span><select name="Тип работ"><option>Новое строительство</option><option>Капитальный ремонт</option><option>Реконструкция</option><option>Инженерные сети</option><option>Отделка</option><option>Другое</option></select></label>
+            <div class="row2">
+              <label class="field"><span>Площадь, м²</span><input name="Площадь" inputmode="decimal"></label>
+              <label class="field"><span>Населённый пункт</span><input name="Населённый пункт"></label>
+            </div>
+            <div class="row2">
+              <label class="field"><span>Имя или организация</span><input name="Имя" required autocomplete="name"><small class="err" aria-live="polite"></small></label>
+              <label class="field"><span>Телефон</span><input name="Телефон" type="tel" required autocomplete="tel"><small class="err" aria-live="polite"></small></label>
+            </div>
+            <label class="check"><input type="checkbox" name="consent"><span>Согласен на обработку персональных данных для связи по заявке</span></label>
+            <button class="cta solid lbl" type="submit"><span class="cta-glass"></span><svg class="cta-edge" viewBox="0 0 190 41" preserveAspectRatio="none" aria-hidden="true"><path d="M3.5.5 H179.5 L189.5 10.5 V37.5 L186.5 40.5 H10.5 L.5 30.5 V3.5 Z" vector-effect="non-scaling-stroke"/></svg><span class="cta-in"><svg class="ico" viewBox="0 0 7 11" aria-hidden="true"><rect x="0" y="0" width="4" height="5"/><rect x="3" y="4" width="4" height="4"/><rect x="0" y="7" width="4" height="4"/></svg><span class="t">Получить расчёт</span></span></button>
+            <p class="form-err" role="alert"></p>
+            <div class="form-done" tabindex="-1" role="status"><div class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>Заявка готова</h3><p>Открылось письмо в почтовой программе — отправьте его, и мы свяжемся с вами в течение рабочего дня. Если письмо не открылось, позвоните: <a href="tel:+73532323535">+7 (3532) 32-35-35</a>.</p></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 02 КАПРЕМОНТ ============ -->
+  <section class="chap" id="repair" data-chapter="repair" data-shot="repair" aria-labelledby="h-repair">
+    <div class="chap-in">
+      <p class="kicker lbl rise"><span class="t">02 — Капремонт</span></p>
+      <h2 class="h2" id="h-repair"><span class="hrow"><span class="hrise">Новая жизнь </span></span><span class="hrow"><span class="hrise">старых зданий</span></span></h2>
+      <p class="lead rise r2">Капитальный ремонт больниц, школ, колледжей и административных зданий. Умеем работать на действующих объектах, не останавливая работу учреждения.</p>
+      <div class="grid">
+        <ol class="rows rise r2">
+          <li><span class="n">01</span><div><h3>Социальные объекты</h3><p>Больницы, учебные заведения, административные здания — ремонт по этапам, без остановки работы.</p></div></li>
+          <li><span class="n">02</span><div><h3>Инженерия под ключ</h3><p>Замена сетей, отопления, вентиляции и электрики силами одной команды.</p></div></li>
+          <li><span class="n">03</span><div><h3>Отделка и благоустройство</h3><p>Внутренняя отделка помещений и обустройство прилегающей территории.</p></div></li>
+        </ol>
+        <ol class="rows rise r2">
+          <li><span class="n">—</span><div><h3>Исполнительная документация</h3><p>Сдаём объект с полным пакетом документов для приёмки.</p></div></li>
+          <li><span class="n">—</span><div><h3>Своя техника</h3><p>Не зависим от арендодателей и их графиков.</p></div></li>
+          <li><span class="n">—</span><div><h3>Опыт госзаказа</h3><p>Знаем требования заказчиков по 44-ФЗ и 223-ФЗ.</p></div></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 03 СПЕЦТЕХНИКА ============ -->
+  <section class="chap" id="tech" data-chapter="tech" data-shot="tech" aria-labelledby="h-tech">
+    <div class="chap-in">
+      <p class="kicker lbl rise"><span class="t">03 — Спецтехника</span></p>
+      <h2 class="h2" id="h-tech"><span class="hrow"><span class="hrise">Своя техника </span></span><span class="hrow"><span class="hrise">на вашем объекте</span></span></h2>
+      <p class="lead rise r2">Строительная и дорожная техника из собственного парка — с нашим машинистом и доставкой на площадку. Наличие и стоимость уточним по заявке.</p>
+      <p class="terms lbl rise r2"><span><b>С оператором</b></span><span><b>Почасово · посменно</b></span><span><b>Доставка на объект</b></span><span><b>Юрлица и частные лица</b></span></p>
+      <div class="grid">
+        <ol class="rows rise r2">
+          <li><span class="n">01</span><div><h3>Экскаватор</h3><p>Копка котлованов и траншей, планировка, погрузка грунта.</p><div class="tasks">Котлованы · траншеи под сети · демонтаж</div></div></li>
+          <li><span class="n">02</span><div><h3>Фронтальный погрузчик</h3><p>Погрузка грунта и сыпучих материалов, расчистка площадок.</p><div class="tasks">Песок и щебень · расчистка · уборка снега</div></div></li>
+          <li><span class="n">03</span><div><h3>Бульдозер</h3><p>Планировка участков и перемещение больших объёмов грунта.</p><div class="tasks">Планировка · отсыпка · подготовка основания</div></div></li>
+          <li><span class="n">04</span><div><h3>Самосвал</h3><p>Вывоз грунта и мусора, доставка инертных материалов.</p><div class="tasks">Вывоз грунта · песок и щебень · мусор</div></div></li>
+          <li><span class="n">05</span><div><h3>Автокран</h3><p>Подъём и монтаж конструкций, разгрузка материалов.</p><div class="tasks">Монтаж · разгрузка · установка оборудования</div></div></li>
+          <li><span class="n">06</span><div><h3>Дорожный каток</h3><p>Уплотнение грунта, щебёночного основания и асфальта.</p><div class="tasks">Основание · укатка асфальта · дворы и проезды</div></div></li>
+        </ol>
+        <div class="panel rise r2">
+          <svg class="panel-edge" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M.5 .5 H86 L99.5 14 V99.5 H14 L.5 86 Z" vector-effect="non-scaling-stroke"/></svg>
+          <form class="form" data-form data-subject="Заявка на аренду техники" novalidate>
+            <h3>Заказать технику</h3>
+            <p class="hint">Проверим наличие и перезвоним с ценой — в рабочее время в течение часа.</p>
+            <label class="field"><span>Техника</span><select name="Техника"><option>Экскаватор</option><option>Фронтальный погрузчик</option><option>Бульдозер</option><option>Самосвал</option><option>Автокран</option><option>Дорожный каток</option><option>Нужна консультация</option></select></label>
+            <div class="row2">
+              <label class="field"><span>С какого числа</span><input name="С" type="date" required data-from><small class="err" aria-live="polite"></small></label>
+              <label class="field"><span>По какое число</span><input name="По" type="date" data-to></label>
+            </div>
+            <div class="row2">
+              <label class="field"><span>Формат</span><select name="Формат"><option>Посменно</option><option>Почасово</option><option>На весь объект</option></select></label>
+              <label class="field"><span>Адрес объекта</span><input name="Адрес"></label>
+            </div>
+            <div class="row2">
+              <label class="field"><span>Имя или организация</span><input name="Имя" required autocomplete="name"><small class="err" aria-live="polite"></small></label>
+              <label class="field"><span>Телефон</span><input name="Телефон" type="tel" required autocomplete="tel"><small class="err" aria-live="polite"></small></label>
+            </div>
+            <label class="check"><input type="checkbox" name="consent"><span>Согласен на обработку персональных данных для связи по заявке</span></label>
+            <button class="cta solid lbl" type="submit"><span class="cta-glass"></span><svg class="cta-edge" viewBox="0 0 190 41" preserveAspectRatio="none" aria-hidden="true"><path d="M3.5.5 H179.5 L189.5 10.5 V37.5 L186.5 40.5 H10.5 L.5 30.5 V3.5 Z" vector-effect="non-scaling-stroke"/></svg><span class="cta-in"><svg class="ico" viewBox="0 0 7 11" aria-hidden="true"><rect x="0" y="0" width="4" height="5"/><rect x="3" y="4" width="4" height="4"/><rect x="0" y="7" width="4" height="4"/></svg><span class="t">Отправить заявку</span></span></button>
+            <p class="form-err" role="alert"></p>
+            <div class="form-done" tabindex="-1" role="status"><div class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>Заявка готова</h3><p>Открылось письмо в почтовой программе — отправьте его, и диспетчер перезвонит. Срочно: <a href="tel:+79228868994">+7 (922) 886-89-94</a>.</p></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 04 ДОРОГИ ============ -->
+  <section class="chap" id="roads" data-chapter="roads" data-shot="roads" aria-labelledby="h-roads">
+    <div class="chap-in">
+      <p class="kicker lbl rise"><span class="t">04 — Дороги</span></p>
+      <h2 class="h2" id="h-roads"><span class="hrow"><span class="hrise">Дорога держится </span></span><span class="hrow"><span class="hrise">на основании</span></span></h2>
+      <p class="lead rise r2">Дороги, проезды и площадки «под ключ» — от земляного полотна до покрытия и благоустройства, собственной дорожной техникой и бригадой.</p>
+      <div class="grid">
+        <ol class="rows rise r2">
+          <li><span class="n">01</span><div><h3>Строительство дорог</h3><p>Автомобильные дороги и внутриплощадочные проезды: земляное полотно, основание, покрытие.</p></div></li>
+          <li><span class="n">02</span><div><h3>Ремонт дорог</h3><p>Капитальный и текущий ремонт, ямочный ремонт, восстановление покрытия после прокладки сетей.</p></div></li>
+          <li><span class="n">03</span><div><h3>Асфальтирование</h3><p>Площадки, парковки, дворы, подъездные пути к предприятиям и складам.</p></div></li>
+          <li><span class="n">04</span><div><h3>Основания и обочины</h3><p>Щебёночное основание, отсыпка и укрепление обочин.</p></div></li>
+          <li><span class="n">05</span><div><h3>Благоустройство</h3><p>Тротуары, бордюры, площадки и обустройство прилегающих территорий.</p></div></li>
+        </ol>
+        <div class="panel rise r2">
+          <svg class="panel-edge" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M.5 .5 H86 L99.5 14 V99.5 H14 L.5 86 Z" vector-effect="non-scaling-stroke"/></svg>
+          <form class="form" data-form data-subject="Расчёт дорожных работ" novalidate>
+            <h3>Рассчитать дорогу</h3>
+            <p class="hint">Укажите тип работ и примерный объём — подготовим предварительную смету.</p>
+            <label class="field"><span>Тип работ</span><select name="Тип работ"><option>Строительство дороги</option><option>Ремонт дороги</option><option>Асфальтирование площадки</option><option>Благоустройство двора</option><option>Другое</option></select></label>
+            <div class="row2">
+              <label class="field"><span>Площадь, м² или длина, м</span><input name="Объём" inputmode="decimal"></label>
+              <label class="field"><span>Населённый пункт</span><input name="Населённый пункт"></label>
+            </div>
+            <div class="row2">
+              <label class="field"><span>Имя или организация</span><input name="Имя" required autocomplete="name"><small class="err" aria-live="polite"></small></label>
+              <label class="field"><span>Телефон</span><input name="Телефон" type="tel" required autocomplete="tel"><small class="err" aria-live="polite"></small></label>
+            </div>
+            <label class="check"><input type="checkbox" name="consent"><span>Согласен на обработку персональных данных для связи по заявке</span></label>
+            <button class="cta solid lbl" type="submit"><span class="cta-glass"></span><svg class="cta-edge" viewBox="0 0 190 41" preserveAspectRatio="none" aria-hidden="true"><path d="M3.5.5 H179.5 L189.5 10.5 V37.5 L186.5 40.5 H10.5 L.5 30.5 V3.5 Z" vector-effect="non-scaling-stroke"/></svg><span class="cta-in"><svg class="ico" viewBox="0 0 7 11" aria-hidden="true"><rect x="0" y="0" width="4" height="5"/><rect x="3" y="4" width="4" height="4"/><rect x="0" y="7" width="4" height="4"/></svg><span class="t">Получить расчёт</span></span></button>
+            <p class="form-err" role="alert"></p>
+            <div class="form-done" tabindex="-1" role="status"><div class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>Заявка готова</h3><p>Открылось письмо в почтовой программе — отправьте его, и мы свяжемся с вами в течение рабочего дня. Если письмо не открылось, позвоните: <a href="tel:+73532323535">+7 (3532) 32-35-35</a>.</p></div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 05 ГОСЗАКАЗ ============ -->
+  <section class="chap" id="gov" data-chapter="gov" data-shot="repair" aria-labelledby="h-gov">
+    <div class="chap-in">
+      <p class="kicker lbl rise"><span class="t">05 — Госзаказ</span></p>
+      <h2 class="h2" id="h-gov"><span class="hrow"><span class="hrise">33 госконтракта </span></span><span class="hrow"><span class="hrise">и допуск СРО</span></span></h2>
+      <p class="lead rise r2">Работаем по 44-ФЗ и 223-ФЗ с больницами, колледжами и муниципалитетами. Состоим в СРО строителей и не входим в реестр недобросовестных поставщиков.</p>
+      <div class="stats rise r2">
+        <div><b>33</b><span>государственных контракта по 44-ФЗ и 223-ФЗ</span></div>
+        <div><b>763 млн ₽</b><span>общий объём госконтрактов</span></div>
+        <div><b>СРО</b><span>членство в саморегулируемой организации строителей</span></div>
+      </div>
+      <p class="sub lbl rise r2"><span class="t">Заказчики по государственным контрактам</span></p>
+      <ol class="rows rise r2">
+        <li><span class="n">01</span><div><h3>Районная больница г. Пласт</h3><p>Челябинская область · 3 контракта · здравоохранение</p></div></li>
+        <li><span class="n">02</span><div><h3>Педагогический колледж г. Оренбурга</h3><p>Оренбург · 2 контракта · образование</p></div></li>
+        <li><span class="n">03</span><div><h3>ГБУ «ОГАОО»</h3><p>Оренбургская область · госучреждение</p></div></li>
+        <li><span class="n">04</span><div><h3>МКУ «Специализированная служба»</h3><p>3 контракта · муниципальный заказ</p></div></li>
+        <li><span class="n">05</span><div><h3>Администрация Колтубановского поссовета</h3><p>Бузулукский район · муниципальный заказ</p></div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ============ 06 О КОМПАНИИ ============ -->
+  <section class="chap" id="about" data-chapter="about" data-shot="build" aria-labelledby="h-about">
+    <div class="chap-in">
+      <p class="kicker lbl rise"><span class="t">06 — О компании</span></p>
+      <h2 class="h2" id="h-about"><span class="hrow"><span class="hrise">Из Оренбурга, </span></span><span class="hrow"><span class="hrise">с 2020 года</span></span></h2>
+      <p class="lead rise r2">ООО «ОренСтрой 56» основано в 2020 году в Оренбурге. Сегодня ведём объекты в Оренбургской области и соседних регионах — своей бригадой и на своей технике.</p>
+      <p class="sub lbl rise r2"><span class="t">Как работаем</span></p>
+      <ol class="steps rise r2">
+        <li><h3>Заявка</h3><p>Обсуждаем задачу, сроки и бюджет.</p></li>
+        <li><h3>Выезд и смета</h3><p>Осматриваем объект, готовим расчёт.</p></li>
+        <li><h3>Договор</h3><p>Фиксируем стоимость, этапы и гарантии.</p></li>
+        <li><h3>Работы</h3><p>Своя бригада и техника, контроль качества.</p></li>
+        <li><h3>Сдача</h3><p>Исполнительная документация и приёмка.</p></li>
+      </ol>
+      <div class="grid">
+        <div class="rise r2">
+          <p class="sub lbl" style="margin-top:0"><span class="t">Частые вопросы</span></p>
+          <div class="faq">
+            <details><summary>Можно заказать только часть работ?</summary><p class="ans">Да. Берём объект целиком или отдельные виды работ — например, только сети или только отделку.</p></details>
+            <details><summary>Как считается стоимость?</summary><p class="ans">После выезда на объект составляем смету по объёмам работ. Предварительный расчёт можно получить по заявке.</p></details>
+            <details><summary>Техника работает с оператором?</summary><p class="ans">Да, вся техника работает с нашим машинистом. Доставляем её на объект своим транспортом.</p></details>
+            <details><summary>Работаете с частными заказчиками?</summary><p class="ans">Да, заключаем договор и с организациями, и с частными лицами.</p></details>
+          </div>
+        </div>
+        <div class="rise r2">
+          <p class="sub lbl" style="margin-top:0"><span class="t">Реквизиты</span></p>
+          <ul class="contacts">
+            <li><span class="lbl">Наименование</span><span class="v small">Общество с ограниченной ответственностью «ОренСтрой 56»</span></li>
+            <li><span class="lbl">ИНН / КПП</span><span class="v small">5611086233 / 773101001</span></li>
+            <li><span class="lbl">ОГРН</span><span class="v small">1205600007337 от 29 июня 2020 года</span></li>
+            <li><span class="lbl">Директор</span><span class="v small">Саридис Никос Васильевич</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 07 КОНТАКТЫ ============ -->
+  <section class="chap" id="contacts" data-chapter="contacts" data-shot="roads" aria-labelledby="h-contacts">
+    <div class="chap-in">
+      <p class="kicker lbl rise"><span class="t">07 — Контакты</span></p>
+      <h2 class="h2" id="h-contacts"><span class="hrow"><span class="hrise">Расскажите </span></span><span class="hrow"><span class="hrise">о вашем объекте</span></span></h2>
+      <p class="lead rise r2">Позвоните или оставьте заявку — ответим в течение рабочего дня и подготовим предварительный расчёт.</p>
+      <div class="grid">
+        <ul class="contacts rise r2">
+          <li><span class="lbl">Офис</span><a href="tel:+73532323535">+7 (3532) 32-35-35</a></li>
+          <li><span class="lbl">Мобильный и аренда техники</span><a href="tel:+79228868994">+7 (922) 886-89-94</a></li>
+          <li><span class="lbl">Почта</span><a href="mailto:orenstroy5600@mail.ru">orenstroy5600@mail.ru</a></li>
+          <li><span class="lbl">Регион работы</span><span class="v small">Оренбург, Оренбургская область и соседние регионы</span></li>
+          <li><span class="lbl">Юридический адрес</span><span class="v small">121353, г. Москва, Сколковское шоссе, д. 31, стр. 2</span></li>
+        </ul>
+        <div class="panel rise r2">
+          <svg class="panel-edge" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><path d="M.5 .5 H86 L99.5 14 V99.5 H14 L.5 86 Z" vector-effect="non-scaling-stroke"/></svg>
+          <form class="form" data-form data-subject="Заявка с сайта" novalidate>
+            <h3>Оставить заявку</h3>
+            <div class="row2">
+              <label class="field"><span>Имя или организация</span><input name="Имя" required autocomplete="name"><small class="err" aria-live="polite"></small></label>
+              <label class="field"><span>Телефон</span><input name="Телефон" type="tel" required autocomplete="tel"><small class="err" aria-live="polite"></small></label>
+            </div>
+            <label class="field"><span>Вид работ</span><select name="Вид работ"><option>Строительство</option><option>Капитальный ремонт</option><option>Инженерные сети</option><option>Строительство и ремонт дорог</option><option>Благоустройство</option><option>Аренда спецтехники</option><option>Другое</option></select></label>
+            <label class="field"><span>Коротко о задаче</span><textarea name="Задача"></textarea></label>
+            <label class="check"><input type="checkbox" name="consent"><span>Согласен на обработку персональных данных для связи по заявке</span></label>
+            <button class="cta solid lbl" type="submit"><span class="cta-glass"></span><svg class="cta-edge" viewBox="0 0 190 41" preserveAspectRatio="none" aria-hidden="true"><path d="M3.5.5 H179.5 L189.5 10.5 V37.5 L186.5 40.5 H10.5 L.5 30.5 V3.5 Z" vector-effect="non-scaling-stroke"/></svg><span class="cta-in"><svg class="ico" viewBox="0 0 7 11" aria-hidden="true"><rect x="0" y="0" width="4" height="5"/><rect x="3" y="4" width="4" height="4"/><rect x="0" y="7" width="4" height="4"/></svg><span class="t">Отправить заявку</span></span></button>
+            <p class="form-err" role="alert"></p>
+            <div class="form-done" tabindex="-1" role="status"><div class="mark"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div><h3>Заявка готова</h3><p>Открылось письмо в почтовой программе — отправьте его, и мы свяжемся с вами в течение рабочего дня. Если письмо не открылось, позвоните: <a href="tel:+73532323535">+7 (3532) 32-35-35</a>.</p></div>
+          </form>
+        </div>
+      </div>
+      <p class="colophon lbl"><span>© <span data-year>2026</span> ООО «ОренСтрой 56»</span><span>ИНН 5611086233</span><span>ОГРН 1205600007337</span></p>
+    </div>
+  </section>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  // Куда отправлять заявки. Пусто — открывается письмо в почтовой программе.
+  // Для автоматической отправки укажите адрес обработчика (Formspree, свой сервер),
+  // принимающего POST с JSON.
+  var FORM_ENDPOINT = '';
+  var MAIL_TO = 'orenstroy5600@mail.ru';
+
+  var RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var CH = 'АБВГДЕЖЗИКЛМНОПРСТУФХЦЧШЭЮЯ';
+  var DUR = 400;
+  var root = document.documentElement;
+  if (!RM) root.classList.add('js');
+
+  /* ---------- 0. фото глав ---------- */
+  var shots = [].slice.call(document.querySelectorAll('.bg .shot'));
+  function loadShot(el){ if (!el._ok){ el._ok = 1; el.style.backgroundImage = 'url(' + el.dataset.bg + ')'; } }
+  loadShot(shots[0]);
+  addEventListener('load', function(){ shots.forEach(loadShot); });
+  var curShot = 'build';
+  function showShot(id){
+    if (id === curShot) return; curShot = id;
+    shots.forEach(function(s){ var on = s.dataset.shot === id; if (on) loadShot(s); s.classList.toggle('on', on); });
+  }
+
+  /* ---------- 1. декод подписей ---------- */
+  var labels = [].slice.call(document.querySelectorAll('.t'));
+  labels.forEach(function(el){ el.dataset.text = el.textContent; });
+  function reserve(){
+    /* замер по полному тексту, даже если подпись сейчас расшифровывается */
+    var w = [], keep = [];
+    labels.forEach(function(el){ keep.push(el.textContent); el.style.width = ''; el.textContent = el.dataset.text; });
+    labels.forEach(function(el){ w.push(el.getBoundingClientRect().width); });
+    labels.forEach(function(el,i){ el.textContent = keep[i]; if (w[i]) el.style.width = (Math.ceil(w[i]*100)/100) + 'px'; });
+  }
+  function reserveOne(el){
+    el.style.width = ''; var keep = el.textContent; el.textContent = el.dataset.text;
+    el.style.width = (Math.ceil(el.getBoundingClientRect().width*100)/100) + 'px'; el.textContent = keep;
+  }
+  function settle(el){
+    if (el._raf){ cancelAnimationFrame(el._raf); el._raf = 0; }
+    if (el._t){ clearTimeout(el._t); el._t = 0; }
+    el.textContent = el.dataset.text;
+  }
+  function decode(el, dur){
+    var text = el.dataset.text, n = text.length;
+    if (RM){ settle(el); return; }
+    settle(el);
+    var D = dur || DUR, t0 = performance.now(), lastRoll = 0, rand = new Array(n);
+    function roll(){ for (var i=0;i<n;i++) rand[i] = CH.charAt((Math.random()*CH.length)|0); }
+    roll();
+    function step(now){
+      var p = Math.min(1, (now - t0) / D), front = p * n, out = '', i;
+      if (now - lastRoll > 45){ roll(); lastRoll = now; }
+      for (i = 0; i < n; i++){
+        var c = text.charAt(i);
+        if (i < front) out += c;
+        else if (i < front + 3.6) out += (c === ' ' ? ' ' : rand[i]);
+        else break;
+      }
+      el.textContent = out;
+      if (p < 1) el._raf = requestAnimationFrame(step); else settle(el);
+    }
+    el._raf = requestAnimationFrame(step);
+    el._t = setTimeout(function(){ settle(el); }, D + 500);
+  }
+  [].forEach.call(document.querySelectorAll('a, button'), function(el){
+    var t = el.querySelector('.t');
+    if (t) el.addEventListener('pointerenter', function(){ decode(t); });
+  });
+
+  /* ---------- 2. параллакс фона ---------- */
+  var bg = document.querySelector('.bg');
+  var tx = 0, ty = 0, cx = 0, cy = 0, running = false;
+  function tick(){
+    cx += (tx - cx) * 0.045; cy += (ty - cy) * 0.045;
+    var w = innerWidth, h = innerHeight;
+    var dx = -cx * w * 0.0156, dy = -cy * h * 0.015;
+    var cover = 2 * Math.max(Math.abs(dx) / w, Math.abs(dy) / h);
+    var sc = 1 + cover + 0.014 * Math.max(0, cy);
+    bg.style.transform = 'translate3d(' + dx.toFixed(2) + 'px,' + dy.toFixed(2) + 'px,0) scale(' + sc.toFixed(4) + ')';
+    if (Math.abs(tx - cx) < 0.0004 && Math.abs(ty - cy) < 0.0004){ running = false; return; }
+    requestAnimationFrame(tick);
+  }
+  function wake(){ if (!running && !RM){ running = true; requestAnimationFrame(tick); } }
+  addEventListener('pointermove', function(e){
+    if (e.pointerType === 'touch') return;
+    tx = (e.clientX / innerWidth) * 2 - 1; ty = (e.clientY / innerHeight) * 2 - 1; wake();
+  }, {passive:true});
+  document.addEventListener('pointerleave', function(){ tx = 0; ty = 0; wake(); });
+
+  /* ---------- 3. главы: рейка, фон и подсветка меню следуют за прокруткой ---------- */
+  var railLinks = [].slice.call(document.querySelectorAll('.index a'));
+  var navLinks = [].slice.call(document.querySelectorAll('.links a'));
+  var current = 'build';
+  function setChapter(id, shot){
+    showShot(shot);
+    if (id === current) return; current = id;
+    railLinks.forEach(function(a){
+      var on = a.getAttribute('href') === '#' + id;
+      a.parentNode.classList.toggle('on', on);
+      if (on){ a.setAttribute('aria-current', 'true'); decode(a.querySelector('.t')); }
+      else a.removeAttribute('aria-current');
+    });
+    navLinks.forEach(function(a){ a.classList.toggle('cur', a.dataset.for.split(' ').indexOf(id) > -1); });
+  }
+  var marks = [].slice.call(document.querySelectorAll('[data-chapter]'));
+  function onScroll(){
+    root.classList.toggle('past', scrollY > innerHeight * .55);
+    var mid = innerHeight * .45, pick = marks[0];
+    marks.forEach(function(m){ if (m.getBoundingClientRect().top <= mid) pick = m; });
+    setChapter(pick.dataset.chapter, pick.dataset.shot);
+  }
+  addEventListener('scroll', onScroll, {passive:true});
+  onScroll();
+
+  // появление глав: заголовок поднимается из маски, подписи расшифровываются
+  var chaps = [].slice.call(document.querySelectorAll('.chap'));
+  if ('IntersectionObserver' in window && !RM){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){
+        if (!e.isIntersecting) return;
+        e.target.classList.add('in');
+        [].forEach.call(e.target.querySelectorAll('.kicker .t, .sub .t'), function(t, i){ setTimeout(function(){ decode(t); }, 120 + i*80); });
+        io.unobserve(e.target);
+      });
+    }, {rootMargin:'0px 0px -18% 0px'});
+    chaps.forEach(function(c){ io.observe(c); });
+  } else chaps.forEach(function(c){ c.classList.add('in'); });
+
+  /* ---------- 4. меню-панель ---------- */
+  var menu = document.querySelector('.menu');
+  var navset = document.getElementById('navset');
+  var menuLabel = menu.querySelector('.t');
+  function setMenu(open){
+    root.classList.toggle('nav-open', open);
+    menu.setAttribute('aria-expanded', String(open));
+    menuLabel.dataset.text = open ? 'Закрыть' : 'Меню';
+    reserveOne(menuLabel); decode(menuLabel);
+    if (open) requestAnimationFrame(function(){ var f = navset.querySelector('a'); if (f) f.focus(); });
+  }
+  menu.addEventListener('click', function(e){ e.stopPropagation(); setMenu(!root.classList.contains('nav-open')); });
+  navset.addEventListener('click', function(e){ if (e.target.closest('a') && root.classList.contains('nav-open')) setMenu(false); });
+  document.addEventListener('keydown', function(e){
+    if (e.key === 'Escape' && root.classList.contains('nav-open')){ setMenu(false); menu.focus(); }
+  });
+  document.addEventListener('click', function(e){
+    if (root.classList.contains('nav-open') && !navset.contains(e.target) && !menu.contains(e.target)) setMenu(false);
+  });
+  addEventListener('resize', function(){ if (innerWidth > 1000 && root.classList.contains('nav-open')) setMenu(false); });
+
+  /* ---------- 5. формы ---------- */
+  function formatPhone(v){
+    var d = v.replace(/\D/g, '');
+    if (d.charAt(0) === '8') d = '7' + d.slice(1);
+    if (d.charAt(0) !== '7') d = '7' + d;
+    d = d.slice(0, 11);
+    var p = d.slice(1), out = '+7';
+    if (p.length) out += ' (' + p.slice(0, 3);
+    if (p.length >= 3) out += ')';
+    if (p.length > 3) out += ' ' + p.slice(3, 6);
+    if (p.length > 6) out += '-' + p.slice(6, 8);
+    if (p.length > 8) out += '-' + p.slice(8, 10);
+    return out;
+  }
+  [].forEach.call(document.querySelectorAll('input[type="tel"]'), function(inp){
+    inp.addEventListener('input', function(){ inp.value = formatPhone(inp.value); });
+    inp.addEventListener('focus', function(){ if (!inp.value) inp.value = '+7 ('; });
+    inp.addEventListener('blur', function(){ if (inp.value.replace(/\D/g, '').length <= 1) inp.value = ''; });
+  });
+  var today = new Date().toISOString().slice(0, 10);
+  [].forEach.call(document.querySelectorAll('[data-from]'), function(from){
+    var to = from.form.querySelector('[data-to]');
+    from.min = today; if (to) to.min = today;
+    from.addEventListener('change', function(){ if (to){ to.min = from.value || today; if (to.value && to.value < from.value) to.value = from.value; } });
+  });
+
+  function validate(field){
+    var input = field.querySelector('input, select, textarea'), err = field.querySelector('.err'), msg = '';
+    if (input.required && !input.value.trim()) msg = 'Заполните это поле';
+    else if (input.type === 'tel' && input.value && input.value.replace(/\D/g, '').length !== 11) msg = 'Номер полностью: +7 (XXX) XXX-XX-XX';
+    field.classList.toggle('invalid', !!msg);
+    input.setAttribute('aria-invalid', String(!!msg));
+    if (err) err.textContent = msg;
+    return !msg;
+  }
+  [].forEach.call(document.querySelectorAll('form[data-form]'), function(form){
+    var fields = [].slice.call(form.querySelectorAll('.field'));
+    var consent = form.querySelector('.check');
+    fields.forEach(function(f){
+      var input = f.querySelector('input, select, textarea');
+      input.addEventListener('blur', function(){ if (input.value) validate(f); });
+      input.addEventListener('input', function(){ if (f.classList.contains('invalid')) validate(f); });
+    });
+    form.addEventListener('submit', function(e){
+      e.preventDefault();
+      var ok = fields.map(validate).every(Boolean);
+      var box = consent.querySelector('input');
+      consent.classList.toggle('invalid', !box.checked);
+      if (!box.checked) ok = false;
+      if (!ok){
+        var bad = form.querySelector('.invalid input, .invalid select, .invalid textarea, .check.invalid input');
+        if (bad) bad.focus();
+        return;
+      }
+      var btn = form.querySelector('button[type="submit"]');
+      btn.setAttribute('aria-busy', 'true'); btn.disabled = true;
+      var data = {};
+      new FormData(form).forEach(function(v, k){ if (k !== 'consent' && v) data[k] = v; });
+      var subject = form.dataset.subject || 'Заявка с сайта';
+      var body = Object.keys(data).map(function(k){ return k + ': ' + data[k]; }).join('\n');
+      var done = function(){
+        form.classList.add('done');
+        form.querySelector('.form-done').focus();
+      };
+      var fail = function(){
+        btn.removeAttribute('aria-busy'); btn.disabled = false;
+        form.querySelector('.form-err').textContent = 'Не удалось отправить. Позвоните нам: +7 (3532) 32-35-35';
+      };
+      if (FORM_ENDPOINT){
+        fetch(FORM_ENDPOINT, {method:'POST', headers:{'Content-Type':'application/json', Accept:'application/json'},
+          body: JSON.stringify(Object.assign({subject: subject}, data))})
+          .then(function(r){ if (!r.ok) throw 0; done(); }).catch(fail);
+      } else {
+        location.href = 'mailto:' + MAIL_TO + '?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+        done();
+      }
+    });
+  });
+  [].forEach.call(document.querySelectorAll('[data-year]'), function(el){ el.textContent = new Date().getFullYear(); });
+
+  /* ---------- 6. запуск ---------- */
+  function boot(){
+    reserve();
+    if (RM) return;
+    function at(sel, t0, step){
+      [].slice.call(document.querySelectorAll(sel)).forEach(function(el, i){
+        setTimeout(function(){ decode(el); }, t0 + i * (step || 0));
+      });
+    }
+    at('.enter .t', 330);
+    at('.menu .t', 390);
+    at('.links a .t', 360, 45);
+    at('.index li.on .t', 660);
+    at('.index li:not(.on) .t', 720, 55);
+    at('.hero .cta .t', 900);
+    at('.dock .t', 1000, 60);
+    setTimeout(function(){ root.classList.remove('anim'); }, 2200);
+    setTimeout(function(){ labels.forEach(settle); }, 2600);
+  }
+  if (document.fonts && document.fonts.load){
+    Promise.all([
+      document.fonts.load('500 10px "IBM Plex Mono"', 'АБВ'),
+      document.fonts.load('500 30px Oswald', 'АБВ'),
+      document.fonts.load('400 11px "IBM Plex Sans"', 'АБВ')
+    ]).then(boot, boot);
+  } else addEventListener('load', boot);
+  var rt;
+  addEventListener('resize', function(){ clearTimeout(rt); rt = setTimeout(reserve, 160); });
+})();
+</script>
+</body>
+</html>
